@@ -47,9 +47,9 @@ class OttAgent(Agent):
         updated_a = current_a + self.g * ((current_m / current_b) * (current_a / np.sum(current_a)) - current_a)
         updated_a = np.maximum(updated_a, self.min_a)
         updated_b = current_b + (updated_a > self.alpha * self.T1) * updated_a * current_m
-        print(print(f"updated_a: {updated_a}"))
-        print(print(f"updated_alpha: {self.alpha * self.T1}"))
-        print(print(f"updated_b: {updated_b}"))
+        # print(print(f"updated_a: {updated_a}"))
+        # print(print(f"updated_alpha: {self.alpha * self.T1}"))
+        # print(print(f"updated_b: {updated_b}"))
 
         # updated_b = current_b
         self.a_list = {obj: updated_a[i] for i, obj in enumerate(self._object_list)}

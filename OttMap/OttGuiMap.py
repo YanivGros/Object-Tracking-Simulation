@@ -1,36 +1,37 @@
+import threading
 import time
 import tkinter as tk
 import random
 from typing import Callable, Tuple
 
 from OttMap.OttBaseMap import OttBaseMap
-from OttObject import OttBaseObject, OttCircleObject, OttDiagonalLineObject
+from OttObject import OttBaseObject
 
 WIDTH = 1
 OUT_LINE_COLOR = "black"
 
 
 class OttGuiMap(tk.Tk, OttBaseMap):
-
-    def __init__(self, length, width, padding=20, object_time_appearance_list: dict[OttBaseObject, int] = None, task_length=100,
-                 agent_callback: Callable[[list[OttBaseObject]], Tuple[int, int]] = None):
+    def __init__(self, length, width, object_time_appearance_list: dict[OttBaseObject, int] = None,
+                 task_length=100,
+                 agent_callback: Callable[[list[OttBaseObject]], Tuple[int, int]] = None,
+                 padding=10):
 
         tk.Tk.__init__(self)
-        OttBaseMap.__init__(self, length, width)
+        OttBaseMap.__init__(self, length, width, task_length, object_time_appearance_list, agent_callback)
         self.agent_callback = agent_callback
 
         self.padding = padding
-        self.object_time_appearance_list = object_time_appearance_list
-        self.task_length = task_length
         self.title("Object Tracking Task App")
-        # self.attributes("-fullscreen", True)  # Make the window fullscreen
+        self.attributes("-fullscreen", True)  # Make the window fullscreen
 
         # Calculate canvas size based on the screen dimensions and the size of the matrix
         screen_width = self.winfo_screenwidth() - 2 * padding
         screen_height = self.winfo_screenheight() - 2 * padding - 100
 
         canvas_edge_length = min(screen_width, screen_height)
-        self.square_size = min((canvas_edge_length - 2 * padding) // width, (canvas_edge_length - 2 * padding) // length)
+        self.square_size = min((canvas_edge_length - 2 * padding) // width,
+                               (canvas_edge_length - 2 * padding) // length)
 
         self.geometry(f"{canvas_edge_length}x{canvas_edge_length}")
 
@@ -39,7 +40,7 @@ class OttGuiMap(tk.Tk, OttBaseMap):
         self.canvas.pack(pady=10)
 
         # Create GUI elements
-        self.start_button = tk.Button(self, text="Start Tracking", command=self.start_tracking)
+        self.start_button = tk.Button(self, text="Start Tracking", command=self._start_tracking)
         self.start_button.pack(pady=10)
         self.tracked_objects: list[OttBaseObject] = []
 
@@ -68,8 +69,9 @@ class OttGuiMap(tk.Tk, OttBaseMap):
                                          outline=OUT_LINE_COLOR,
                                          width=WIDTH)
 
-    def start_tracking(self):
+    def _start_tracking(self):
         for i in range(self.task_length):
+            self.update()
             self.draw_map()
             if self.agent_callback is not None:
                 position = self.agent_callback(self.ott_objects)

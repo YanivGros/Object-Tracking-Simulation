@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Callable, Tuple
 
 from OttObject import OttBaseObject
 
@@ -6,9 +7,14 @@ from OttObject import OttBaseObject
 class OttBaseMap(ABC):
     """Base class for all map classes."""
 
-    def __init__(self, length, width):
+    def __init__(self, length, width, task_length=100,
+                 object_time_appearance_list: dict[OttBaseObject, int] = None,
+                 agent_callback: Callable[[list[OttBaseObject]], Tuple[int, int]] = None):
         self.length = length
         self.width = width
+        self.task_length = task_length
+        self.agent_callback = agent_callback
+        self.object_time_appearance_list = object_time_appearance_list
         self.ott_objects = []
 
     def add_object(self, obj: OttBaseObject):
@@ -28,7 +34,8 @@ class OttBaseMap(ABC):
         trail_objects = []
         for obj in self.ott_objects:
             if obj.should_leave_trail:
-                trail_objects.append(OttBaseObject(obj.position, color="gray", steps_to_live=5, should_leave_trail=False, meaning=1))
+                trail_objects.append(
+                    OttBaseObject(obj.position, color="gray", steps_to_live=5, should_leave_trail=False, meaning=1))
 
                 obj.update_location()
                 if obj.position == trail_objects[-1].position:
