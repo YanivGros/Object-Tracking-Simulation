@@ -17,10 +17,10 @@ def sample_agent(object_list: list[OttBaseObject]):
 
 # Run the application
 if __name__ == "__main__":
-    object_time_appearance_list = {OttCircleObject((20, 20), 10, "red", meaning=4): 0,
-                                   OttDiagonalLineObject((0, 0), (60, 60), "green", meaning=2): 50,
+    object_time_appearance_list = {OttCircleObject((20, 20), 10, "red", meaning=1): 0,
+                                   OttDiagonalLineObject((0, 0), (60, 60), "green", meaning=0.5): 50,
                                    }
-    agent = OttAgent(g=10 ** -0.5, alpha=1.4, starting_position=(30, 30))
+    agent = OttAgent(g=0.01, alpha=1.4, starting_position=(30, 30))
     app = OttGuiMap(length=60, width=60, object_time_appearance_list=object_time_appearance_list, task_length=300,
                     agent_callback=agent.step)
 

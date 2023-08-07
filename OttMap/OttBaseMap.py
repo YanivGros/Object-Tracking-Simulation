@@ -35,7 +35,7 @@ class OttBaseMap(ABC):
         for obj in self.ott_objects:
             if obj.should_leave_trail:
                 trail_objects.append(
-                    OttBaseObject(obj.position, color="gray", steps_to_live=5, should_leave_trail=False, meaning=1))
+                    OttBaseObject(obj.position, color="gray", steps_to_live=5, should_leave_trail=False, meaning=0))
 
                 obj.update_location()
                 if obj.position == trail_objects[-1].position:

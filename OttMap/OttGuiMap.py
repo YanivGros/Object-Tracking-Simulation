@@ -45,7 +45,6 @@ class OttGuiMap(tk.Tk, OttBaseMap):
         self.tracked_objects: list[OttBaseObject] = []
 
         self.draw_map()
-        time.sleep(0.1)
 
     def draw_map(self):
         # Clear the canvas
@@ -55,7 +54,6 @@ class OttGuiMap(tk.Tk, OttBaseMap):
             for j in range(self.length):
                 x1, y1 = i * self.square_size, j * self.square_size
                 x2, y2 = x1 + self.square_size, y1 + self.square_size
-                # Draw squares with different colors for tracked objects
                 self.canvas.create_rectangle(x1 + self.padding, y1 + self.padding, x2 + self.padding, y2 + self.padding,
                                              fill="white",
                                              outline=OUT_LINE_COLOR,
@@ -87,4 +85,3 @@ class OttGuiMap(tk.Tk, OttBaseMap):
                     if i == time_appearance:
                         self.add_object(obj)
 
-            time.sleep(0.1)  # Adjust the time in milliseconds as needed

@@ -5,7 +5,7 @@ class OttBaseObject:
     position: Tuple[int, int]
     id = 0
 
-    def __init__(self, position: (int, int), color: str = "white", steps_to_live=0, meaning=0, should_leave_trail=True):
+    def __init__(self, position: (int, int), color: str = "white", steps_to_live=0, meaning=0, should_leave_trail=False):
         self.should_leave_trail = should_leave_trail
         self.object_id = OttBaseObject.id
         OttBaseObject.id += 1
