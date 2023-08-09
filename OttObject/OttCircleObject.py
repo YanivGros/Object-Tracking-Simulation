@@ -5,9 +5,8 @@ from OttObject.OttBaseObject import OttBaseObject
 
 
 class OttCircleObject(OttBaseObject):
-    def __init__(self, position, radius, color="red", steps_to_live=0, meaning=0):
-        super().__init__(position, color, steps_to_live, meaning)
-
+    def __init__(self, name, position, radius, color="red", steps_to_live=0, meaning=0):
+        super().__init__(name, position, color, steps_to_live, meaning)
         self.radius = radius
         self.center = position[0] - radius, position[1]
         steps_for_full_circle = math.ceil(radius * math.pi * 2)

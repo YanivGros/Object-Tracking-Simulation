@@ -12,22 +12,20 @@ OUT_LINE_COLOR = "black"
 
 
 class OttGuiMap(tk.Tk, OttBaseMap):
-    def __init__(self, length, width, object_time_appearance_list: dict[OttBaseObject, int] = None,
+    def __init__(self, length, width,
+                 object_time_appearance_list: dict[OttBaseObject, int] = None,
                  task_length=100,
-                 agent_callback: Callable[[list[OttBaseObject]], Tuple[int, int]] = None,
+                 agent_callback: Callable[[list[OttBaseObject]], Tuple[int, int]] = lambda x: (0, 0),
                  padding=10):
 
         tk.Tk.__init__(self)
         OttBaseMap.__init__(self, length, width, task_length, object_time_appearance_list, agent_callback)
-        self.agent_callback = agent_callback
-
         self.padding = padding
         self.title("Object Tracking Task App")
-        self.attributes("-fullscreen", True)  # Make the window fullscreen
+        self.attributes("-fullscreen", True)
 
-        # Calculate canvas size based on the screen dimensions and the size of the matrix
         screen_width = self.winfo_screenwidth() - 2 * padding
-        screen_height = self.winfo_screenheight() - 2 * padding - 100
+        screen_height = self.winfo_screenheight() - 2 * padding
 
         canvas_edge_length = min(screen_width, screen_height)
         self.square_size = min((canvas_edge_length - 2 * padding) // width,
@@ -40,11 +38,8 @@ class OttGuiMap(tk.Tk, OttBaseMap):
         self.canvas.pack(pady=10)
 
         # Create GUI elements
-        self.start_button = tk.Button(self, text="Start Tracking", command=self._start_tracking)
-        self.start_button.pack(pady=10)
         self.tracked_objects: list[OttBaseObject] = []
-
-        self.draw_map()
+        self._start_tracking()
 
     def draw_map(self):
         # Clear the canvas
@@ -66,22 +61,19 @@ class OttGuiMap(tk.Tk, OttBaseMap):
                                          fill=obj.get_color(),
                                          outline=OUT_LINE_COLOR,
                                          width=WIDTH)
+        x1, y1 = self.agent_position[0] * self.square_size, self.agent_position[1] * self.square_size
+        x2, y2 = x1 + self.square_size, y1 + self.square_size
+        self.canvas.create_rectangle(x1 + self.padding, y1 + self.padding, x2 + self.padding, y2 + self.padding,
+                                     outline=OUT_LINE_COLOR,
+                                     width=WIDTH * 4)
 
     def _start_tracking(self):
         for i in range(self.task_length):
             self.update()
-            self.draw_map()
-            if self.agent_callback is not None:
-                position = self.agent_callback(self.ott_objects)
-                x1, y1 = position[0] * self.square_size, position[1] * self.square_size
-                x2, y2 = x1 + self.square_size, y1 + self.square_size
-                self.canvas.create_rectangle(x1 + self.padding, y1 + self.padding, x2 + self.padding, y2 + self.padding,
-                                             outline="purple",
-                                             width=WIDTH * 4)
             self.update_idletasks()
             self.update_map()
             if self.object_time_appearance_list is not None:
                 for obj, time_appearance in self.object_time_appearance_list.items():
                     if i == time_appearance:
                         self.add_object(obj)
-
+            self.draw_map()

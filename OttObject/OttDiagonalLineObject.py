@@ -2,8 +2,8 @@ from OttObject.OttBaseObject import OttBaseObject
 
 
 class OttDiagonalLineObject(OttBaseObject):
-    def __init__(self, position, end, color="green", steps_to_live=100, meaning=0):
-        super().__init__(position, color, steps_to_live, meaning)
+    def __init__(self, name, position, end, color="green", steps_to_live=100, meaning=0):
+        super().__init__(name, position, color, steps_to_live, meaning)
         assert abs(position[0] - end[0]) == abs(position[1] - end[1]), "The line must be diagonal"
         self.cur_step = 0
         self.end = end

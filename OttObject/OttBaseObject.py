@@ -5,8 +5,8 @@ class OttBaseObject:
     position: Tuple[int, int]
     id = 0
 
-    def __init__(self, position: (int, int), color: str = "white", steps_to_live=0, meaning=0, should_leave_trail=False):
-        self.should_leave_trail = should_leave_trail
+    def __init__(self, name, position: (int, int), color: str = "white", steps_to_live=0, meaning=0):
+        self.name = name
         self.object_id = OttBaseObject.id
         OttBaseObject.id += 1
         self.steps_to_live = steps_to_live
@@ -30,7 +30,8 @@ class OttBaseObject:
     def get_meaning(self):
         return self.meaning
 
+    def __str__(self):
+        return f"Object {self.name} at {self.position}"
+
     def __gt__(self, other):
         return self.meaning > other.meaning
-
-

@@ -1,3 +1,4 @@
+import random
 from typing import Dict, Any, List
 
 import numpy as np
@@ -26,9 +27,10 @@ class OttAgent(Agent):
 
     def step(self, cur_objects_list: List[OttBaseObject]):
         if not cur_objects_list:
-            return self.position + self.rng.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
+            direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
+            return self.position[0] + direction[0], self.position[1] + direction[1]
 
-        # current_m = self.s.get_meaning()
+            # current_m = self.s.get_meaning()
         for obj in cur_objects_list:
             if obj not in self._object_list:
                 self._object_list.append(obj)

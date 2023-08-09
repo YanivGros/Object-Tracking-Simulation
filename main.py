@@ -4,6 +4,7 @@ import tkinter as tk
 import random
 
 from OttAgent.OttAgent import OttAgent
+from OttMap.OttCmdMap import OttCmdMap
 from OttMap.OttGuiMap import OttGuiMap
 from OttObject import OttCircleObject, OttBaseObject, OttDiagonalLineObject
 
@@ -17,27 +18,11 @@ def sample_agent(object_list: list[OttBaseObject]):
 
 # Run the application
 if __name__ == "__main__":
-    object_time_appearance_list = {OttCircleObject((20, 20), 10, "red", meaning=1): 0,
-                                   OttDiagonalLineObject((0, 0), (60, 60), "green", meaning=0.5): 50,
-                                   }
+    object_time_appearance_list = {OttCircleObject("Main-object", (20, 20), 10, "red", meaning=1): 0,
+                                   OttDiagonalLineObject("Distracting-object", (0, 0), (60, 60), "green", meaning = 0.5): 5,
+    }
     agent = OttAgent(g=0.01, alpha=1.4, starting_position=(30, 30))
-    app = OttGuiMap(length=60, width=60, object_time_appearance_list=object_time_appearance_list, task_length=300,
+    app = OttCmdMap(length=60, width=60, object_time_appearance_list=object_time_appearance_list, task_length=300,
                     agent_callback=agent.step)
 
     app.mainloop()
-    # app.add_object(OttCircleObject((20, 20), 10, "red"))
-    # app.update_map()
-    # time.sleep(0.1)
-    # app.update_map()
-    # time.sleep(0.1)
-    # app.update_map()
-    # time.sleep(0.1)
-    # app.update_map()
-    # app.update_map()
-    # app.update_map()
-    # app.update_map()
-    #
-    # # for i in range(100):
-    # #     app.update_map()
-    # #     time.sleep(0.1)
-    # app.mainloop()
