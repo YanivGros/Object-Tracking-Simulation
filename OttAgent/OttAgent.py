@@ -1,31 +1,45 @@
 import random
-from typing import Dict, Any, List
+from typing import List
 
 import numpy as np
-
-from OttMap import OttBaseMap
-from OttObject import OttBaseObject
 from ComDePy.numerical import Agent
+
+from OttMap.OttBaseMap import OttBaseMap
+from OttObject import OttBaseObject
 
 
 class OttAgent(Agent):
-    objects_representation: dict[OttBaseObject, Any]
+    """
+    An agent that used CFG to track objects in the map.
+    """
 
-    def __init__(self, g, alpha, starting_position, min_a=0.01, T1=1):
+    def __init__(self, ott_map: OttBaseMap, g, alpha, starting_position, min_a=0.01, T1=1):
+        """
+        Initialize the agent.
+        @param ott_map: The map the agent is in.
+        @param g: The g parameter.
+        @param alpha: The alpha parameter.
+        @param starting_position: The starting position of the agent.
+        @param min_a: The minimum value of a.
+        @param T1: The T1 parameter.
+        """
+        self.ott_map = ott_map
         self.g = g
         self.alpha = alpha
         self.min_a = min_a
         self.T1 = T1
         self.position: (int, int) = starting_position
-        # self.cur_object: OttBaseObject = OttBaseObject(starting_position)
         self.rng = np.random.default_rng()
         self.a_list = {}
         self.b_list = {}
-        self.s = OttBaseObject(starting_position, meaning=0.1)
-
+        self.s = None
         self._object_list: List[OttBaseObject] = []
 
     def step(self, cur_objects_list: List[OttBaseObject]):
+        """
+        @param cur_objects_list: The list of objects in the agent's view.
+        @return: The agent's next position based on the CFG.
+        """
         if not cur_objects_list:
             direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
             return self.position[0] + direction[0], self.position[1] + direction[1]
@@ -80,12 +94,12 @@ class OttAgent(Agent):
     def _sim(self):
         """
         Runs the sim. Fails if already ran.
-        :return: self
+        :return: None
         """
-
-        for t in range(1, self.max_steps):
-            self.a[t], self.b[t], self.s[t] = self._step(self.a[t - 1], self.b[t - 1], self.s[:t])
-
-        self._segment_explore_exploit()
-
-        return self
+        max_step = 100
+        for t in range(max_step):
+            self.ott_map.update_map()
+            next_agent_position = self.step(self.ott_map.ott_objects)
+            self.ott_map.set_agent_position(next_agent_position)
+            self.agent_position = next_agent_position
+            self.ott_map.draw_map()

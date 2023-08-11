@@ -1,11 +1,18 @@
-from typing import Tuple
-
-
 class OttBaseObject:
-    position: Tuple[int, int]
     id = 0
+    """
+    Base class for all trackable objects.
+    """
 
     def __init__(self, name, position: (int, int), color: str = "white", steps_to_live=0, meaning=0):
+        """
+        Initialize the OttBaseObject.
+        @param name: Name of the object.
+        @param position: Position of the object.
+        @param color: Color of the object.
+        @param steps_to_live: Number of steps the object will live for.
+        @param meaning: Meaning of the object.
+        """
         self.name = name
         self.object_id = OttBaseObject.id
         OttBaseObject.id += 1
@@ -22,9 +29,17 @@ class OttBaseObject:
         return self.color
 
     def update_location(self):
+        """
+        Update the location of the object.
+        @return: None
+        """
         self.cur_step += 1
 
     def is_alive(self):
+        """
+        Check if the object is still alive.
+        @return: True if the object is still alive, False otherwise.
+        """
         return self.cur_step < self.steps_to_live or self.steps_to_live == 0
 
     def get_meaning(self):
@@ -33,5 +48,10 @@ class OttBaseObject:
     def __str__(self):
         return f"Object {self.name} at {self.position}"
 
-    def __gt__(self, other):
-        return self.meaning > other.meaning
+    def __eq__(self, other):
+        if not isinstance(other, OttBaseObject):
+            return False
+        return self.object_id == other.object_id
+
+    def __hash__(self):
+        return hash(self.object_id)
