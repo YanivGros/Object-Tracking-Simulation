@@ -22,3 +22,6 @@ tifffile==2023.7.18
 tk==0.1.0
 tqdm==4.65.0
 zipp==3.16.2
+
+pandas~=2.0.3
+ComDePy~=0.1.1
