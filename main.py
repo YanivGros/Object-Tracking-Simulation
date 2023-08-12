@@ -37,15 +37,9 @@ def main():
         ): 50,
     }
 
-    current_date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    out_dir_files = os.path.join(OUTPUT_DIR, f"{OUTPUT_DIR}_{current_date}")
-    os.makedirs(out_dir_files, exist_ok=True)
-
     i = 0
-    alpha_range = np.linspace(0.1, 5, 40)
-    g_range = np.linspace(0.1, 5, 40)
+    alpha_range = np.linspace(0.01, 2, 40)
+    g_range = np.linspace(0.01, 2, 40)
     results_df = pd.DataFrame(columns=["alpha", "g", "p_of_steps_on_target", "number_of_alternations"])
 
     for alpha in alpha_range:
@@ -75,11 +69,17 @@ def main():
             i += 1
             print(f"run {i} done out of {len(alpha_range) * len(g_range)}")
 
+    current_date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    out_dir_files = os.path.join(OUTPUT_DIR, f"{OUTPUT_DIR}_{current_date}")
+    os.makedirs(out_dir_files, exist_ok=True)
+
     plt_filename = os.path.join(out_dir_files, f"p_on_target_scatter_max_alpha_{alpha_range[-1]}.png")
-    plot_data(results_df, plt_filename, color_by="p_of_steps_on_target", color_by_name="Percentage of Steps on Target")
+    plot_data(results_df, plt_filename, color_by="p_of_steps_on_target", color_by_name="Percentage of Fixations on the Target")
 
     plt_filename = os.path.join(out_dir_files, f"number_of_alternations_max_alpha{alpha_range[-1]}.png")
-    plot_data(results_df, plt_filename, color_by="number_of_alternations", color_by_name="Number of Alternations")
+    plot_data(results_df, plt_filename, color_by="number_of_alternations", color_by_name="Number of Transitions")
 
     csv_filename = os.path.join(out_dir_files, f"results_{current_date}.csv")
     results_df.to_csv(csv_filename, index=False)
@@ -91,12 +91,10 @@ def main():
 def plot_data(results_df, file_name, color_by, color_by_name):
     plt.scatter(results_df["alpha"], results_df["g"], c=results_df[color_by], cmap="plasma")
     plt.colorbar(label=color_by_name)
-    # plt.colorbar(label="Percentage of Steps on Target")
     plt.xlabel("Alpha")
     plt.ylabel("g")
     plt.title(f"{color_by_name} for Different Alpha and g Values")
     plt.grid()
-    # plt_filename = os.path.join(out_dir_files, f"percentage_on_target_scatter_max_alpha_{alpha_range[-1]}.png")
     plt.savefig(file_name)
     plt.show()
     print("Scatter plot saved to", file_name)

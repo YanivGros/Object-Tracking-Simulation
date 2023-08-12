@@ -30,6 +30,7 @@ class OttAgent(Agent):
         self.min_a = min_a
         self.T1 = T1
         self.position: (int, int) = starting_position
+
         self.rng = np.random.default_rng()
         self.a_list = {}
         self.b_list = {}
@@ -46,46 +47,33 @@ class OttAgent(Agent):
         if not cur_objects_list:
             direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
             return self.position[0] + direction[0], self.position[1] + direction[1]
-            # current_m = self.s.get_meaning()
+
         for obj in cur_objects_list:
             if obj not in self._object_list:
                 self._object_list.append(obj)
-                self.a_list[obj] = self.rng.uniform(self.min_a)  # self.rng.uniform(self.min_a)
+                self.a_list[obj] = self.rng.uniform(self.min_a)
                 self.b_list[obj] = 0.1
+
         for obj in self._object_list:
             if obj not in cur_objects_list:
                 self._object_list.remove(obj)
                 del self.a_list[obj]
                 del self.b_list[obj]
-        current_m = np.zeros(len(self._object_list))
-        current_a = np.zeros(len(self._object_list))
-        current_b = np.zeros(len(self._object_list))
-        current_s = np.zeros(len(self._object_list))
-        for i, obj in enumerate(self._object_list):
-            if obj == self.s:
-                current_m[i] = self.s.get_meaning()
-            else:
-                current_m[i] = obj.get_meaning()
-            current_a[i] = self.a_list[obj]
-            current_b[i] = self.b_list[obj]
-            current_s[i] = obj.get_meaning()
+
+        current_m = np.array([self.s.get_meaning() if obj == self.s else obj.get_meaning() for obj in self._object_list])
+        current_a = np.array([self.a_list[obj] for obj in self._object_list])
+        current_b = np.array([self.b_list[obj] for obj in self._object_list])
+        current_s = np.array([obj.get_meaning() for obj in self._object_list])
 
         updated_a = current_a + self.g * ((current_m / current_b) * (current_a / np.sum(current_a)) - current_a)
         updated_a = np.maximum(updated_a, self.min_a)
 
         updated_b = current_b + (updated_a > self.alpha * self.T1) * updated_a * current_m
-        # updated_b = current_b + (updated_a > self.alpha * self.T1) * (updated_a - self.alpha) * current_m
-        # print(f"updated_a: {updated_a}")
-        # print(f"updated_b: {updated_b}")
-        # print(print(f"updated_a: {updated_a}"))
-        # print(print(f"updated_alpha: {self.alpha * self.T1}"))
-        # print(print(f"updated_b: {updated_b}"))
 
-        # updated_b = current_b
         self.a_list = {obj: updated_a[i] for i, obj in enumerate(self._object_list)}
         self.b_list = {obj: updated_b[i] for i, obj in enumerate(self._object_list)}
         scores = current_s * updated_a
-        # print(f"scores: {scores} len: {len(scores)}")
+
         if self.s is None:
             self.s: OttBaseObject = self._object_list[np.argmax(scores)]
 
@@ -95,8 +83,6 @@ class OttAgent(Agent):
             self.s = self._object_list[np.argmax(scores)]
         if self.s.is_target:
             self.total_step_spent_on_target += 1
-        # print(f"self.s: {self.s.color}")
-        # print(self.s.position)
         return self.s.position
 
     def _sim(self):
