@@ -13,7 +13,7 @@ class OttCircleObject(OttBaseObject):
     def __init__(self, radius, **kwargs):
         """
         Initialize the OttCircleObject.
-        The circle will start from position with  degree 0, then .
+        The circle will be centered at (position[0], position[1] - radius). The circle will be drawn clockwise.
         @param radius: Radius of the circle.
         @keyword name: Name of the object.
         @keyword position: Position of the object.
@@ -23,7 +23,7 @@ class OttCircleObject(OttBaseObject):
         """
         super().__init__(**kwargs)
         self.radius = radius
-        self.center = self.position[0] - radius, self.position[1]
+        self.center = self.position[0], self.position[1] - radius
         steps_for_full_circle = math.ceil(radius * math.pi * 2)
         self.step_size = 1 / steps_for_full_circle
 
@@ -32,7 +32,7 @@ class OttCircleObject(OttBaseObject):
         super().update_location()
         next_x = self.center[0] + self.radius * math.cos(self.step_size * self.cur_step * 2 * math.pi)
         next_y = self.center[1] - self.radius * math.sin(self.step_size * self.cur_step * 2 * math.pi)
-        self.position = (math.ceil(next_x), math.ceil(next_y))
+        self.position = (math.ceil(next_y), math.ceil(next_x))
 
     @wraps(OttBaseObject.is_alive)
     def is_alive(self):

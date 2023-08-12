@@ -10,19 +10,16 @@ class OttBaseMap(ABC):
     The base class for OttMap.
     """
 
-    def __init__(self, length, width, task_length=100, delay=0,
-                 object_time_appearance_list: dict[OttBaseObject, int] = ()):
+    def __init__(self, length, width, delay=0, object_time_appearance_list: dict[OttBaseObject, int] = ()):
         """
         Initialize the Map.
         @param length: The length of the map.
         @param width: The width of the map.
-        @param task_length: The length of the task.
         @param delay: The delay between each step.
         @param object_time_appearance_list: Dictionary mapping OttBaseObjects to their appearance times at the map.
         """
         self.length = length
         self.width = width
-        self.task_length = task_length
         self.delay = delay
         self.object_time_appearance_list = object_time_appearance_list
         self.agent_position = (0, 0)
@@ -84,6 +81,14 @@ class OttBaseMap(ABC):
         if self.delay:
             time.sleep(self.delay)
 
+    def reset(self):
+        """
+        Reset the map.
+        @return: None
+        """
+        for obj in self.object_time_appearance_list.keys():
+            obj.reset()
+
     @abstractmethod
     def draw_map(self):
         """
@@ -91,3 +96,4 @@ class OttBaseMap(ABC):
         @return: None
         """
         pass
+

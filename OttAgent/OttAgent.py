@@ -13,7 +13,7 @@ class OttAgent(Agent):
     An agent that used CFG to track objects in the map.
     """
 
-    def __init__(self, ott_map: OttBaseMap, g, alpha, starting_position, min_a=0.01, T1=1):
+    def __init__(self, ott_map: OttBaseMap, g, alpha, starting_position, max_steps=100, min_a=0.01, T1=1):
         """
         Initialize the agent.
         @param ott_map: The map the agent is in.
@@ -23,6 +23,7 @@ class OttAgent(Agent):
         @param min_a: The minimum value of a.
         @param T1: The T1 parameter.
         """
+        self.max_steps = max_steps
         self.ott_map = ott_map
         self.g = g
         self.alpha = alpha
@@ -34,6 +35,8 @@ class OttAgent(Agent):
         self.b_list = {}
         self.s = None
         self._object_list: List[OttBaseObject] = []
+        self.number_of_alternations = 0
+        self.total_step_spent_on_target = 0
 
     def step(self, cur_objects_list: List[OttBaseObject]):
         """
@@ -43,7 +46,6 @@ class OttAgent(Agent):
         if not cur_objects_list:
             direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
             return self.position[0] + direction[0], self.position[1] + direction[1]
-
             # current_m = self.s.get_meaning()
         for obj in cur_objects_list:
             if obj not in self._object_list:
@@ -70,10 +72,11 @@ class OttAgent(Agent):
 
         updated_a = current_a + self.g * ((current_m / current_b) * (current_a / np.sum(current_a)) - current_a)
         updated_a = np.maximum(updated_a, self.min_a)
+
         updated_b = current_b + (updated_a > self.alpha * self.T1) * updated_a * current_m
         # updated_b = current_b + (updated_a > self.alpha * self.T1) * (updated_a - self.alpha) * current_m
-        print(f"updated_a: {updated_a}")
-        print(f"updated_b: {updated_b}")
+        # print(f"updated_a: {updated_a}")
+        # print(f"updated_b: {updated_b}")
         # print(print(f"updated_a: {updated_a}"))
         # print(print(f"updated_alpha: {self.alpha * self.T1}"))
         # print(print(f"updated_b: {updated_b}"))
@@ -82,13 +85,18 @@ class OttAgent(Agent):
         self.a_list = {obj: updated_a[i] for i, obj in enumerate(self._object_list)}
         self.b_list = {obj: updated_b[i] for i, obj in enumerate(self._object_list)}
         scores = current_s * updated_a
-        print(f"scores: {scores} len: {len(scores)}")
+        # print(f"scores: {scores} len: {len(scores)}")
+        if self.s is None:
+            self.s: OttBaseObject = self._object_list[np.argmax(scores)]
 
-        if self.s != self._object_list[np.argmax(scores)]:
-            if self.s in cur_objects_list:
-                self.b_list[self.s] = 0.1
+        elif self.s != self._object_list[np.argmax(scores)]:
+            self.b_list[self.s] = 0.1
+            self.number_of_alternations += 1
             self.s = self._object_list[np.argmax(scores)]
-        print(f"self.s: {self.s.color}")
+        if self.s.is_target:
+            self.total_step_spent_on_target += 1
+        # print(f"self.s: {self.s.color}")
+        # print(self.s.position)
         return self.s.position
 
     def _sim(self):
@@ -96,10 +104,13 @@ class OttAgent(Agent):
         Runs the sim. Fails if already ran.
         :return: None
         """
-        max_step = 100
-        for t in range(max_step):
+        for t in range(self.max_steps):
             self.ott_map.update_map()
             next_agent_position = self.step(self.ott_map.ott_objects)
             self.ott_map.set_agent_position(next_agent_position)
             self.agent_position = next_agent_position
             self.ott_map.draw_map()
+            # input("Press Enter to continue...")
+        self.ott_map.reset()
+
+
