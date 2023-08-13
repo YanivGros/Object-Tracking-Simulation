@@ -64,6 +64,12 @@ class OttAgent(Agent):
         current_a = np.array([self.a_list[obj] for obj in self._object_list])
         current_b = np.array([self.b_list[obj] for obj in self._object_list])
         current_s = np.array([obj.get_meaning() for obj in self._object_list])
+        print(f"Current m: {current_m}")
+        print(f"Current a: {current_a}")
+        print(f"Current b: {current_b}")
+        print(f"Current s: {current_s}")
+        print(f"Current s: {self.s}")
+        print("-"*50)
 
         updated_a = current_a + self.g * ((current_m / current_b) * (current_a / np.sum(current_a)) - current_a)
         updated_a = np.maximum(updated_a, self.min_a)
