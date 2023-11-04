@@ -103,10 +103,11 @@ def plot_data(results_df, file_name, color_by, color_by_name):
 if __name__ == "__main__":
     main()
 
-# draw uniformli from -2 to 1 and raise 10 to that power.
-# do 20 run for each promation
-# alpha should be at greater then 1 (power from 0 to 1.5 or 2)
-# sensitivty analyziz (take the importent paramters change the meaning) with alpha and g that correspond to the humen
-# draw graph of the attention
-# model fcd and compare
-
+# todo draw uniformly from -2 to 1 and raise 10 to that power. - done
+# todo do 20 run for each promotion
+# todo alpha should be at greater then 1 (power from 0 to 1.5 or 2) - done
+# todo sensitivity analyze
+#
+#  to m with alpha and g that correspond to the humen
+# todo draw graph of the attention
+# todo model fcd and compare
